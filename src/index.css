@@ -1,0 +1,45 @@
+@import "tailwindcss";
+/* Import M PLUS 1p from Google Fonts */
+@import url('https://fonts.googleapis.com/css2?family=M+PLUS+1p:wght@400;700;800&display=swap');
+
+:root {
+  --figma-bg-fill: #FFFFFF;
+}
+
+/* Base Body Styles */
+body {
+  margin: 0;
+  padding: 0;
+  background-color: var(--figma-bg-fill);
+  font-family: 'M PLUS 1p', sans-serif;
+  font-size: 12px;
+  font-weight: 700; /* Bold as per Figma */
+}
+
+/* The Movie Poster Container */
+.despicable-bg-image {
+  position: absolute;
+  inset: 0;
+  /* Figma: 150 offset from top */
+  top: 150px; 
+  background-image: url('https://images.alphacoders.com/136/1361833.jpeg');
+  background-size: cover;
+  background-position: center top;
+  background-repeat: no-repeat;
+  z-index: 0;
+  /* Optional brightness to keep text readable */
+  filter: brightness(0.9);
+}
+
+/* Icons at 20% opacity */
+.tool-icons {
+  opacity: 0.2;
+}
+
+/* Glassmorphism Chat Bubble */
+.chat-bubble {
+  background: rgba(30, 58, 95, 0.4);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
