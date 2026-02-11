@@ -31,7 +31,7 @@ EXAMPLE INTERACTION:
 User: "How do I center a div?"
 You: "Yeesh… you cannot even center a box? Fine. Use flexbox: justify-content: center; align-items: center. Boom. Centered. Even my Minions could do this."`;
 
-const genAI = new GoogleGenerativeAI(import.meta.env.VITE_GEMINI_API_KEY);
+const genAI = new GoogleGenerativeAI("AIzaSyCsSj3oUQWBe5d7vqONzux59AqIZnWrdCQ");
 
 const model = genAI.getGenerativeModel({
   model: "gemini-2.5-flash",
