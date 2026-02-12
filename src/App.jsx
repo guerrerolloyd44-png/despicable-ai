@@ -3,7 +3,7 @@ import {
   Plus, ThumbsUp, ThumbsDown,
   RotateCcw, Copy, MoreVertical, SendHorizontal,
   User, Settings, Menu, X, Pin, Check, HelpCircle, AlertTriangle,
-  Music, Heart, Shield
+  Music, Heart, Shield, Trash2, MessageSquare
 } from 'lucide-react';
 import { getMinionChat, getMinionPersona, sendMessage } from './gemini.js';
 
@@ -50,20 +50,27 @@ const DespicableAI = () => {
   // --- MINION SELECTION ---
   const [selectedMinion, setSelectedMinion] = useState("bob");
 
+  // --- CHAT HISTORY ---
+  const [chatHistory, setChatHistory] = useState([]);
+  const [activeChatId, setActiveChatId] = useState(() => Date.now());
+
   // --- CHAT STATE ---
   const persona = getMinionPersona(selectedMinion);
   const minionUI = MINIONS[selectedMinion];
 
-  const [messages, setMessages] = useState([
-    {
-      id: 1,
+  const makeGreeting = (minionKey) => {
+    const p = getMinionPersona(minionKey || selectedMinion);
+    return {
+      id: Date.now(),
       sender: 'ai',
-      text: persona.greeting,
+      text: p.greeting,
       liked: false,
       disliked: false,
       prompt: ""
-    }
-  ]);
+    };
+  };
+
+  const [messages, setMessages] = useState([makeGreeting("bob")]);
   const [input, setInput] = useState("");
   const [isTyping, setIsTyping] = useState(false);
   const scrollRef = useRef(null);
@@ -79,22 +86,86 @@ const DespicableAI = () => {
     scrollRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages, isTyping]);
 
+  // Helper: get a title preview from messages (first user message or fallback)
+  const getChatTitle = (msgs) => {
+    const firstUser = msgs.find(m => m.sender === 'user');
+    if (firstUser) {
+      return firstUser.text.length > 30 ? firstUser.text.slice(0, 30) + '…' : firstUser.text;
+    }
+    return 'New Chat';
+  };
+
+  // Save current chat to history (only if it has user messages)
+  const saveCurrentChat = () => {
+    const hasUserMsg = messages.some(m => m.sender === 'user');
+    if (!hasUserMsg) return;
+    setChatHistory(prev => {
+      const exists = prev.find(c => c.id === activeChatId);
+      if (exists) {
+        return prev.map(c => c.id === activeChatId
+          ? { ...c, messages, title: getChatTitle(messages), minion: selectedMinion }
+          : c
+        );
+      }
+      return [
+        { id: activeChatId, messages, title: getChatTitle(messages), minion: selectedMinion, createdAt: Date.now() },
+        ...prev
+      ];
+    });
+  };
+
+  // Auto-save current chat whenever messages change (if there are user messages)
+  useEffect(() => {
+    const hasUserMsg = messages.some(m => m.sender === 'user');
+    if (hasUserMsg) {
+      setChatHistory(prev => {
+        const exists = prev.find(c => c.id === activeChatId);
+        if (exists) {
+          return prev.map(c => c.id === activeChatId
+            ? { ...c, messages, title: getChatTitle(messages), minion: selectedMinion }
+            : c
+          );
+        }
+        return [
+          { id: activeChatId, messages, title: getChatTitle(messages), minion: selectedMinion, createdAt: Date.now() },
+          ...prev
+        ];
+      });
+    }
+  }, [messages]);
+
+  // Load a chat from history
+  const handleLoadChat = (chatItem) => {
+    if (chatItem.id === activeChatId) return;
+    saveCurrentChat();
+    setActiveChatId(chatItem.id);
+    setSelectedMinion(chatItem.minion);
+    setMessages(chatItem.messages);
+    chatRef.current = getMinionChat(chatItem.minion);
+  };
+
+  // Delete a chat from history
+  const handleDeleteChat = (e, chatId) => {
+    e.stopPropagation();
+    setChatHistory(prev => prev.filter(c => c.id !== chatId));
+    // If deleting the active chat, start a fresh one
+    if (chatId === activeChatId) {
+      const newId = Date.now();
+      setActiveChatId(newId);
+      chatRef.current = getMinionChat(selectedMinion);
+      setMessages([makeGreeting()]);
+    }
+  };
+
   // --- MINION SWITCH ---
   const handleSelectMinion = (minionKey) => {
     if (minionKey === selectedMinion) return;
+    saveCurrentChat();
     setSelectedMinion(minionKey);
-    const newPersona = getMinionPersona(minionKey);
+    const newId = Date.now();
+    setActiveChatId(newId);
     chatRef.current = getMinionChat(minionKey);
-    setMessages([
-      {
-        id: Date.now(),
-        sender: 'ai',
-        text: newPersona.greeting,
-        liked: false,
-        disliked: false,
-        prompt: ""
-      }
-    ]);
+    setMessages([makeGreeting(minionKey)]);
   };
 
   // --- LOGIC FUNCTIONS ---
@@ -155,17 +226,11 @@ const DespicableAI = () => {
   };
 
   const handleNewChat = () => {
+    saveCurrentChat();
+    const newId = Date.now();
+    setActiveChatId(newId);
     chatRef.current = getMinionChat(selectedMinion);
-    setMessages([
-      {
-        id: Date.now(),
-        sender: 'ai',
-        text: persona.greeting,
-        liked: false,
-        disliked: false,
-        prompt: ""
-      }
-    ]);
+    setMessages([makeGreeting()]);
   };
 
   return (
@@ -260,9 +325,45 @@ const DespicableAI = () => {
             </div>
 
             <div className="space-y-2 pt-2">
-              <p className="text-[#3b6b8b] text-[10px] uppercase font-black tracking-widest">CHATS</p>
-              <div className="bg-[#054767] border border-[#0a4d7a] rounded-[1.2rem] p-2 space-y-0.5">
-                <div className="p-3 text-white font-bold text-[11px] bg-white/5 rounded-xl cursor-pointer">Current Session</div>
+              <div className="flex items-center justify-between">
+                <p className="text-[#3b6b8b] text-[10px] uppercase font-black tracking-widest">CHATS</p>
+                <span className="text-[#3b6b8b] text-[9px]">{chatHistory.length > 0 ? chatHistory.length : ''}</span>
+              </div>
+              <div className="bg-[#054767] border border-[#0a4d7a] rounded-[1.2rem] p-2 space-y-1 max-h-[200px] overflow-y-auto scrollbar-hide">
+                {/* Active / Current Session */}
+                <div className="p-3 text-white font-bold text-[11px] bg-white/10 rounded-xl flex items-center gap-2.5 border border-white/10">
+                  <MessageSquare size={13} className="text-[#5ba3c6] shrink-0" />
+                  <span className="truncate flex-grow">{getChatTitle(messages)}</span>
+                  <span className="text-[8px] text-[#5ba3c6] uppercase shrink-0">Active</span>
+                </div>
+
+                {/* History items */}
+                {chatHistory
+                  .filter(c => c.id !== activeChatId)
+                  .map((chat) => (
+                    <div
+                      key={chat.id}
+                      onClick={() => handleLoadChat(chat)}
+                      className="p-3 text-white/70 text-[11px] rounded-xl cursor-pointer hover:bg-white/5 flex items-center gap-2.5 group transition-all"
+                    >
+                      <MessageSquare size={13} className="text-[#3b6b8b] shrink-0" />
+                      <div className="flex-grow min-w-0">
+                        <p className="truncate font-bold text-[11px]">{chat.title}</p>
+                        <p className="text-[8px] text-[#3b6b8b] uppercase">{MINIONS[chat.minion]?.icon} {chat.minion}</p>
+                      </div>
+                      <button
+                        onClick={(e) => handleDeleteChat(e, chat.id)}
+                        className="opacity-0 group-hover:opacity-100 text-red-400/60 hover:text-red-400 transition-all shrink-0 p-1 rounded-lg hover:bg-red-400/10"
+                        title="Delete chat"
+                      >
+                        <Trash2 size={13} />
+                      </button>
+                    </div>
+                  ))}
+
+                {chatHistory.filter(c => c.id !== activeChatId).length === 0 && (
+                  <p className="text-[9px] text-[#3b6b8b] text-center py-2 opacity-60">No past chats yet</p>
+                )}
               </div>
               <button
                 onClick={handleNewChat}
