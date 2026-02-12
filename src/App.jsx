@@ -2,9 +2,44 @@ import React, { useState, useEffect, useRef } from 'react';
 import {
   Plus, ThumbsUp, ThumbsDown,
   RotateCcw, Copy, MoreVertical, SendHorizontal,
-  User, Settings, Menu, X, Pin, Check, HelpCircle, AlertTriangle
+  User, Settings, Menu, X, Pin, Check, HelpCircle, AlertTriangle,
+  Music, Heart, Shield
 } from 'lucide-react';
-import { getGruChat, sendMessage } from './gemini.js';
+import { getMinionChat, getMinionPersona, sendMessage } from './gemini.js';
+
+// ── Minion Config ────────────────────────────────────────────────────────
+const MINIONS = {
+  bob: {
+    icon: "🧸",
+    lucideIcon: Heart,
+    color: "from-[#FFD700] to-[#FFA500]",
+    accent: "#FFD700",
+    bgActive: "bg-[#FFD700]/20 border-[#FFD700]/60",
+    bgHover: "hover:bg-[#FFD700]/10",
+    label: "Sweet & Innocent",
+    traits: ["Innocent", "Eager", "Emotional", "Lovable"],
+  },
+  kevin: {
+    icon: "💪",
+    lucideIcon: Shield,
+    color: "from-[#4A90D9] to-[#2C5AA0]",
+    accent: "#4A90D9",
+    bgActive: "bg-[#4A90D9]/20 border-[#4A90D9]/60",
+    bgHover: "hover:bg-[#4A90D9]/10",
+    label: "Brave & Heroic",
+    traits: ["Leader", "Brave", "Confident", "Loyal"],
+  },
+  stuart: {
+    icon: "🎸",
+    lucideIcon: Music,
+    color: "from-[#9B59B6] to-[#6C3483]",
+    accent: "#9B59B6",
+    bgActive: "bg-[#9B59B6]/20 border-[#9B59B6]/60",
+    bgHover: "hover:bg-[#9B59B6]/10",
+    label: "Chill & Sarcastic",
+    traits: ["Lazy", "Musical", "Sarcastic", "Cool"],
+  },
+};
 
 const DespicableAI = () => {
   // --- SIDEBAR & MODAL STATE ---
@@ -12,12 +47,18 @@ const DespicableAI = () => {
   const [showSettings, setShowSettings] = useState(false);
   const [copySuccess, setCopySuccess] = useState(null);
 
+  // --- MINION SELECTION ---
+  const [selectedMinion, setSelectedMinion] = useState("bob");
+
   // --- CHAT STATE ---
+  const persona = getMinionPersona(selectedMinion);
+  const minionUI = MINIONS[selectedMinion];
+
   const [messages, setMessages] = useState([
     {
       id: 1,
       sender: 'ai',
-      text: "Bello! I'm ready. My digital coffee is hot and my gadgets are tuned. What's on your diabolical mind today?",
+      text: persona.greeting,
       liked: false,
       disliked: false,
       prompt: ""
@@ -31,12 +72,30 @@ const DespicableAI = () => {
   const chatRef = useRef(null);
 
   useEffect(() => {
-    chatRef.current = getGruChat();
+    chatRef.current = getMinionChat(selectedMinion);
   }, []);
 
   useEffect(() => {
     scrollRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages, isTyping]);
+
+  // --- MINION SWITCH ---
+  const handleSelectMinion = (minionKey) => {
+    if (minionKey === selectedMinion) return;
+    setSelectedMinion(minionKey);
+    const newPersona = getMinionPersona(minionKey);
+    chatRef.current = getMinionChat(minionKey);
+    setMessages([
+      {
+        id: Date.now(),
+        sender: 'ai',
+        text: newPersona.greeting,
+        liked: false,
+        disliked: false,
+        prompt: ""
+      }
+    ]);
+  };
 
   // --- LOGIC FUNCTIONS ---
   const handleSend = async () => {
@@ -61,7 +120,7 @@ const DespicableAI = () => {
       const errorMsg = {
         id: Date.now() + 1,
         sender: 'ai',
-        text: "Yeesh… something went wrong with my evil communication device. Even my Minions could maintain a better connection. Try again, tiny-brain.",
+        text: `Uh oh… something went wrong with the communication device. Even ${persona.name} couldn't fix this one. Try again!`,
         liked: false, disliked: false, prompt: currentInput,
         isError: true
       };
@@ -96,12 +155,12 @@ const DespicableAI = () => {
   };
 
   const handleNewChat = () => {
-    chatRef.current = getGruChat();
+    chatRef.current = getMinionChat(selectedMinion);
     setMessages([
       {
         id: Date.now(),
         sender: 'ai',
-        text: "Bello! I'm ready. My digital coffee is hot and my gadgets are tuned. What's on your diabolical mind today?",
+        text: persona.greeting,
         liked: false,
         disliked: false,
         prompt: ""
@@ -142,28 +201,61 @@ const DespicableAI = () => {
             {/* Active Character Badge */}
             <div className="space-y-3">
               <div className="flex items-center gap-3 text-[#5ba3c6] text-[10px] uppercase tracking-widest">
-                <User size={14} /> ACTIVE PERSONA
+                <User size={14} /> ACTIVE MINION
               </div>
-              <div className="bg-[#052d4b] border border-[#0a4d7a] rounded-xl p-4 flex items-center gap-4">
-                <div className="w-10 h-10 rounded-full bg-gradient-to-br from-[#FF5C00] to-[#ff8c42] flex items-center justify-center text-white font-black text-lg shrink-0">
-                  G
+              <div className="bg-[#052d4b] border border-[#0a4d7a] rounded-xl p-4 flex items-center gap-4 transition-all duration-300">
+                <div className={`w-10 h-10 rounded-full bg-gradient-to-br ${minionUI.color} flex items-center justify-center text-lg shrink-0`}>
+                  {minionUI.icon}
                 </div>
                 <div>
-                  <p className="text-white font-black text-[13px]">Felonius Gru</p>
-                  <p className="text-[#5ba3c6] text-[9px] uppercase tracking-wider">Supervillain Mastermind</p>
+                  <p className="text-white font-black text-[13px]">{persona.name}</p>
+                  <p className="text-[#5ba3c6] text-[9px] uppercase tracking-wider">{persona.title}</p>
                 </div>
               </div>
             </div>
 
-            {/* Personality Traits */}
+            {/* ── CHOOSE YOUR MINION ── */}
             <div className="space-y-3">
-              <p className="text-[#3b6b8b] text-[9px] uppercase font-bold tracking-wider">PERSONALITY TRAITS</p>
-              <div className="grid grid-cols-2 gap-2">
-                {["Dramatic", "Sarcastic", "Arrogant", "Theatrical"].map((trait) => (
-                  <div key={trait} className="text-[10px] py-2 rounded-md bg-[#054767] text-white uppercase text-center">
-                    {trait}
-                  </div>
-                ))}
+              <p className="text-[#3b6b8b] text-[9px] uppercase font-bold tracking-wider">CHOOSE YOUR MINION</p>
+              <div className="space-y-2">
+                {Object.entries(MINIONS).map(([key, minion]) => {
+                  const isActive = key === selectedMinion;
+                  const minionPersona = getMinionPersona(key);
+                  const Icon = minion.lucideIcon;
+                  return (
+                    <button
+                      key={key}
+                      onClick={() => handleSelectMinion(key)}
+                      className={`w-full p-3 rounded-xl border text-left transition-all duration-300 group
+                        ${isActive
+                          ? `${minion.bgActive} border-opacity-100 shadow-lg`
+                          : `bg-[#052d4b] border-[#0a4d7a] ${minion.bgHover}`
+                        }
+                      `}
+                    >
+                      <div className="flex items-center gap-3">
+                        <div className={`w-9 h-9 rounded-lg bg-gradient-to-br ${minion.color} flex items-center justify-center text-white shrink-0 transition-transform duration-300 ${isActive ? 'scale-110' : 'group-hover:scale-105'}`}>
+                          <span className="text-base">{minion.icon}</span>
+                        </div>
+                        <div className="flex-grow min-w-0">
+                          <p className="text-white font-black text-[12px]">{minionPersona.name}</p>
+                          <p className="text-[#5ba3c6] text-[8px] uppercase tracking-wider truncate">{minion.label}</p>
+                        </div>
+                        {isActive && (
+                          <div className="w-2 h-2 rounded-full animate-pulse shrink-0" style={{ backgroundColor: minion.accent }} />
+                        )}
+                      </div>
+                      {/* Trait chips shown when active */}
+                      {isActive && (
+                        <div className="flex flex-wrap gap-1.5 mt-2.5 pl-12">
+                          {minion.traits.map(t => (
+                            <span key={t} className="text-[8px] py-1 px-2 rounded-md bg-white/10 text-white/70 uppercase">{t}</span>
+                          ))}
+                        </div>
+                      )}
+                    </button>
+                  );
+                })}
               </div>
             </div>
 
@@ -214,7 +306,9 @@ const DespicableAI = () => {
                       : 'bg-blue-600/40 text-white max-w-[85%] self-end border-white/10'
                     }`}>
                     <p className="text-[10px] mb-2 opacity-60 uppercase font-black tracking-widest">
-                      {msg.sender === 'ai' ? (msg.isError ? '⚠ GRU (ERROR)' : 'GRU') : 'You'}
+                      {msg.sender === 'ai'
+                        ? (msg.isError ? `⚠ ${persona.name.toUpperCase()} (ERROR)` : `${minionUI.icon} ${persona.name.toUpperCase()}`)
+                        : 'You'}
                     </p>
                     <div className="text-[13px] tracking-wide whitespace-pre-wrap">{msg.text}</div>
                     {msg.sender === 'ai' && (
@@ -247,14 +341,16 @@ const DespicableAI = () => {
               {isTyping && (
                 <div className="flex flex-col items-center">
                   <div className="p-6 md:p-8 rounded-[1.5rem] shadow-2xl backdrop-blur-2xl border border-white/10 bg-[#0a2a4d]/50 text-white w-full max-w-2xl">
-                    <p className="text-[10px] mb-2 opacity-60 uppercase font-black tracking-widest">GRU</p>
+                    <p className="text-[10px] mb-2 opacity-60 uppercase font-black tracking-widest">{minionUI.icon} {persona.name.toUpperCase()}</p>
                     <div className="flex items-center gap-2">
                       <div className="flex gap-1.5">
-                        <div className="w-2 h-2 bg-[#FF5C00] rounded-full animate-bounce" style={{ animationDelay: '0ms' }} />
-                        <div className="w-2 h-2 bg-[#FF5C00] rounded-full animate-bounce" style={{ animationDelay: '150ms' }} />
-                        <div className="w-2 h-2 bg-[#FF5C00] rounded-full animate-bounce" style={{ animationDelay: '300ms' }} />
+                        <div className="w-2 h-2 rounded-full animate-bounce" style={{ backgroundColor: minionUI.accent, animationDelay: '0ms' }} />
+                        <div className="w-2 h-2 rounded-full animate-bounce" style={{ backgroundColor: minionUI.accent, animationDelay: '150ms' }} />
+                        <div className="w-2 h-2 rounded-full animate-bounce" style={{ backgroundColor: minionUI.accent, animationDelay: '300ms' }} />
                       </div>
-                      <span className="text-[11px] opacity-40 ml-2 uppercase tracking-wider">Plotting response...</span>
+                      <span className="text-[11px] opacity-40 ml-2 uppercase tracking-wider">
+                        {selectedMinion === 'bob' ? 'Thinking really hard...' : selectedMinion === 'kevin' ? 'Deploying plan...' : 'Meh... typing...'}
+                      </span>
                     </div>
                   </div>
                 </div>
@@ -274,7 +370,11 @@ const DespicableAI = () => {
                 onChange={(e) => setInput(e.target.value)}
                 onKeyDown={(e) => e.key === 'Enter' && handleSend()}
                 className="flex-grow bg-transparent border-none text-white text-[18px] outline-none"
-                placeholder="Type your diabolical query..."
+                placeholder={
+                  selectedMinion === 'bob' ? "Ask Bob anything! 🧸"
+                    : selectedMinion === 'kevin' ? "Report to Kevin, leader! 💪"
+                      : "Say something cool to Stuart... 🎸"
+                }
                 disabled={isTyping}
               />
               <button
@@ -306,7 +406,7 @@ const DespicableAI = () => {
                   <Settings className="text-orange-400" />
                   <div>
                     <p className="font-bold">Powered by Gemini</p>
-                    <p className="text-[10px] opacity-60 uppercase">Model: gemini-2.0-flash</p>
+                    <p className="text-[10px] opacity-60 uppercase">Model: gemini-2.5-flash</p>
                   </div>
                 </div>
               </div>
