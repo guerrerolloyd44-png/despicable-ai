@@ -35,7 +35,7 @@ const LandingPage = ({ onStart }) => {
                 <MobileMenu />
 
                 {/* ── TOP BAR ── */}
-                <header className="relative z-30 flex items-center justify-between px-6 md:px-10 py-4">
+                <header className="relative z-30 bg-black flex items-center justify-between px-6 md:px-10 py-4">
                     <h1 className="text-[#FF5C00] text-xl md:text-5xl font-black italic tracking-tighter uppercase leading-none drop-shadow-lg">
                         Despicable-AI
                     </h1>
