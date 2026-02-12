@@ -1,16 +1,36 @@
-# React + Vite
+2/12/2026
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Despicable-AI
 
-Currently, two official plugins are available:
+Why did I choose this theme?
+choose this theme because it is awesome to talk to a minion not like 
+an legit minion but the personality of the characters is good and 
+like gru i want to talk to a minion to expirience what gru does with the minions 
+i always watch the new movie of minion or despicable me 
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
 
-## React Compiler
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+What is this Chatbot?
+this chatbot is a Despicable-AI, this is a chatbot that you can talk to a someone like a minion
+or chat with it that you are talking to a minion and asking for something.
+this chatbot is created by Lloyd Niño F. Guerrero 
 
-## Expanding the ESLint configuration
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+
+Key Benefits for the User
+Despicable-AI provides fans with a fun, immersive, and mobile-friendly role-playing experience that brings
+the distinct personalities of the Minions to life through character-accurate dialogue and a sleek, modern interface.
+
+
+Why would someone use Despicable-AI? and for what is this chatbot?
+Despicable-AI can be use for someone who can speak to or or talk to someone just like your talking 
+to a minion from despicable me and u want to experiance what gru does with the minions
+
+
+
+How to use this chatbot (Manual)
+1. Launch: Go to ( https://despicable-ai.netlify.app/ ) and click "Start Chat!" to enter the hub.
+2. Pick a Sidekick: Use the sidebar to select your Minion—choose Kevin (Heroic), Bob (Sweet), or Stuart (Sarcastic).
+3. Interact: Type a message or mission into the chat bar at the bottom to receive a response in character.
+4. Role-play: Use the personality tags as inspiration to brainstorm "heroic rackets" or chaos with your chosen Minion.
+5. Explore: Use the navigation menu at the top to visit the About page for project info or the Contact page.
