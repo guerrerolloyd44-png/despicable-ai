@@ -199,7 +199,7 @@ const DespicableAI = () => {
 
         {/* 4. MAIN CONTENT */}
         <div className="relative flex-grow flex flex-col overflow-hidden">
-          <div className="absolute inset-0 z-0 bg-cover bg-center" style={{ backgroundImage: `url('https://static3.go3.tv/scale/go3/webuploads/rest/upload/vod/8215748/images/23611008?dsth=1080&dstw=1920&srcmode=0&quality=65&type=1&srcx=1&srcy=1&srcw=1/1&srch=1/1')` }}>
+          <div className="absolute inset-0 z-0 bg-cover bg-center" style={{ backgroundImage: `url('https://media4.giphy.com/media/v1.Y2lkPTc5MGI3NjExczEyZWFoNXJwZW9oMG52bTlzcDZlcHMyYnljOHc0c2g2eGducWlrZiZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/wduVogRyuLaGbHMjzI/giphy.gif')` }}>
             <div className="absolute inset-0 bg-gradient-to-br from-[#120a2e]/60 via-[#0a2e5c]/30 to-[#2e0a4e]/70" />
           </div>
 
@@ -208,10 +208,10 @@ const DespicableAI = () => {
               {messages.map((msg) => (
                 <div key={msg.id} className={`flex flex-col ${msg.sender === 'user' ? 'items-end' : 'items-center'}`}>
                   <div className={`p-6 md:p-8 rounded-[1.5rem] shadow-2xl backdrop-blur-2xl border transition-all ${msg.isError
-                      ? 'bg-red-900/30 border-red-500/30 text-white w-full'
-                      : msg.sender === 'ai'
-                        ? 'bg-[#0a2a4d]/50 text-white w-full border-white/10'
-                        : 'bg-blue-600/40 text-white max-w-[85%] self-end border-white/10'
+                    ? 'bg-red-900/30 border-red-500/30 text-white w-full'
+                    : msg.sender === 'ai'
+                      ? 'bg-[#0a2a4d]/50 text-white w-full border-white/10'
+                      : 'bg-blue-600/40 text-white max-w-[85%] self-end border-white/10'
                     }`}>
                     <p className="text-[10px] mb-2 opacity-60 uppercase font-black tracking-widest">
                       {msg.sender === 'ai' ? (msg.isError ? '⚠ GRU (ERROR)' : 'GRU') : 'You'}
