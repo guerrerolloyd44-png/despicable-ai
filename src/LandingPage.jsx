@@ -64,7 +64,7 @@ const LandingPage = ({ onStart }) => {
                     {/* ── CTA SECTION ── */}
                     <div className="relative z-20 mt-auto flex flex-col items-center pb-10 md:pb-16 px-6 text-center">
                         <p className="text-white/80 text-[10px] md:text-[13px] uppercase tracking-[0.35em] mb-4 font-black">
-                            Talk to a Minion
+                            Talk to a Minion.
                         </p>
                         <button
                             onClick={onStart}
