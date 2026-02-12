@@ -6,6 +6,7 @@ import {
   Music, Heart, Shield, Trash2, MessageSquare
 } from 'lucide-react';
 import { getMinionChat, getMinionPersona, sendMessage } from './gemini.js';
+import LandingPage from './LandingPage.jsx';
 
 // ── Minion Config ────────────────────────────────────────────────────────
 const MINIONS = {
@@ -42,6 +43,9 @@ const MINIONS = {
 };
 
 const DespicableAI = () => {
+  // --- LANDING PAGE ---
+  const [showLanding, setShowLanding] = useState(true);
+
   // --- SIDEBAR & MODAL STATE ---
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [showSettings, setShowSettings] = useState(false);
@@ -232,6 +236,11 @@ const DespicableAI = () => {
     chatRef.current = getMinionChat(selectedMinion);
     setMessages([makeGreeting()]);
   };
+
+  // ── RENDER ──────────────────────────────────────────────────────────
+  if (showLanding) {
+    return <LandingPage onStart={() => setShowLanding(false)} />;
+  }
 
   return (
     <div className="flex flex-col h-screen w-full font-['M_PLUS_1p'] font-bold overflow-hidden bg-black text-[12px]">
