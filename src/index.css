@@ -13,7 +13,8 @@ body {
   background-color: var(--figma-bg-fill);
   font-family: 'M PLUS 1p', sans-serif;
   font-size: 12px;
-  font-weight: 700; /* Bold as per Figma */
+  font-weight: 700;
+  /* Bold as per Figma */
 }
 
 /* The Movie Poster Container */
@@ -21,7 +22,7 @@ body {
   position: absolute;
   inset: 0;
   /* Figma: 150 offset from top */
-  top: 150px; 
+  top: 150px;
   background-image: url('https://images.alphacoders.com/136/1361833.jpeg');
   background-size: cover;
   background-position: center top;
@@ -38,7 +39,7 @@ body {
 
 /* Glassmorphism Chat Bubble */
 .chat-bubble {
-  background: rgba(30, 58, 95, 0.4);
+  background: rgba(0, 0, 0, 0.4);
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
   border: 1px solid rgba(255, 255, 255, 0.2);
